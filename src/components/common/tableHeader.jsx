@@ -15,7 +15,6 @@ class TableHeader extends Component {
     }
     this.props.onSort(sortColumn);
   };
-
   renderSortIcon = column => {
     const { sortColumn } = this.props;
 
