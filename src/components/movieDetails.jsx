@@ -1,8 +1,9 @@
 import React from "react";
+import { toast } from "react-toastify";
 import Form from "./common/form";
 import Joi from "joi-browser";
-import { getGenres } from "../services/fakeGenreService";
-import { getMovie, saveMovie } from "./../services/fakeMovieService";
+import { getGenres } from "../services/genreService";
+import { getMovie, saveMovie } from "./../services/movieService";
 
 class MovieDetails extends Form {
   state = {
@@ -29,17 +30,28 @@ class MovieDetails extends Form {
       .label("DailyRentalRate"),
   };
 
-  componentDidMount() {
-    const genres = getGenres();
+  async pupolateGenre() {
+    const { data: genres } = await getGenres();
     this.setState({ genres });
+  }
 
-    const movieId = this.props.match.params.id;
-    if (movieId === "new") return;
+  async pupolateMovie() {
+    try {
+      const movieId = this.props.match.params.id;
+      if (movieId === "new") return;
 
-    const movie = getMovie(movieId);
-    if (!movie) return this.props.history.replace("/notfound");
+      const { data: movie } = await getMovie(movieId);
+      this.setState({ data: this.mapToViewModel(movie) });
+    } catch (error) {
+      if (error.response && error.response.status === 404)
+        toast.error("the movie does not exist");
+      this.props.history.replace("/notfound");
+    }
+  }
 
-    this.setState({ data: this.mapToViewModel(movie) });
+  async componentDidMount() {
+    await this.pupolateGenre();
+    await this.pupolateMovie();
   }
 
   mapToViewModel(movie) {
@@ -52,27 +64,21 @@ class MovieDetails extends Form {
     };
   }
 
-  doSubmit = () => {
-    //call the server
-    console.log("Submitted");
-
-    saveMovie(this.state.data);
+  doSubmit = async() => {
+     await saveMovie(this.state.data);
     this.props.history.push("/movies");
   };
 
-  // handleSave = () => {
-
-  // };
+  
   render() {
     return (
       <div>
-        <h1>Movie form {this.props.match.params.id} </h1>
+        <h1>Movie form </h1>
         <form onSubmit={this.handleSubmit}>
           {this.renderInput("title", "Title")}
           {this.renderSelect("genreId", "Genre", this.state.genres)}
           {this.renderInput("numberInStock", "Stock", "number")}
           {this.renderInput("dailyRentalRate", "Rate", "number")}
-
           {this.renderButton("Save")}
         </form>
         {/* <button onClick={this.handleSave}>Save</button> */}

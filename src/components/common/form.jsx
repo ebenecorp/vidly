@@ -52,7 +52,7 @@ class Form extends Component {
     this.doSubmit();
   };
 
-  renderButton = (label) => {
+  renderButton (label) {
     return (
       <button disabled={this.validate()} className="btn btn-primary">
         {label}
@@ -60,7 +60,7 @@ class Form extends Component {
     );
   };
 
-  renderInput = (name, label,type) => {
+  renderInput (name, label,type = "text") {
       const { data, errors } = this.state;
     return (
       <Input
@@ -74,7 +74,7 @@ class Form extends Component {
     );
   };
 
-  renderSelect =(name, label, options)=>{
+  renderSelect(name, label, options){
     const { data, errors } = this.state;
     return (
       <SelectInput

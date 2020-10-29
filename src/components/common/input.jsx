@@ -1,5 +1,5 @@
 import React from "react";
-import { rest } from "lodash";
+// import { rest } from "lodash";
 
 const Input = ({ name, error, label, ...rest }) => {
   return (
